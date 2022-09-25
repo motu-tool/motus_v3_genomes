@@ -3,6 +3,8 @@
 import sys
 import argparse
 import os
+from urllib.request import Request, urlopen
+import gzip
 
 # ------------------------------------------------------------------------------
 #       print the help informations
@@ -62,8 +64,28 @@ def download_motu(ID):
 # ------------------------------------------------------------------------------
 # download one genome
 # ------------------------------------------------------------------------------
-def download_genome(ID):
+def download_genome(ID, genome_2_motus):
     print("TO be implemented 4")
+
+
+# ------------------------------------------------------------------------------
+# download map of genomes to mOTUs
+# ------------------------------------------------------------------------------
+def load_map_genome_motus():
+    file_map="https://zenodo.org/record/6975139/files/genome_2_mOTU_v3.0.1.tsv.gz?download=1"
+
+    res = dict()
+
+    req = Request(file_map)
+    req.add_header('Accept-Encoding', 'gzip')
+    response = urlopen(req)
+    content = gzip.decompress(response.read())
+    decomp_req = content.splitlines()
+    for line in decomp_req:
+        vals = line.decode('utf-8').rstrip().split("\t")
+        res[vals[0]] = vals[1]
+
+    return res
 
 
 # ------------------------------------------------------------------------------
@@ -103,16 +125,22 @@ def main(argv=None):
         sys.stderr.write("Error: missing -p\n")
         return 1
 
+    # download all genomes
     if args.output_dir == "all":
         sys.stderr.write("Download all genomes")
         download_all_genomes()
         return 0
+
+    # download all genomes from a mOTU
     if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU"):
         sys.stderr.write("Download mOTU")
         download_motu(args.ID)
         return 0
+
+    # download one genome
     sys.stderr.write("Download genome")
-    download_genome(args.ID)
+    genome_2_motus = load_map_genome_motus()
+    download_genome(args.ID, genome_2_motus)
     return 0
 
 
