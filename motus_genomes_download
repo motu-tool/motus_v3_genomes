@@ -147,7 +147,7 @@ def download_genome(ID, genome_2_motus, tempdir_path, all_url_info):
 
     # extract one file
     tar = tarfile.open(path_tar_file)
-    files_i_want = [ID]
+    files_i_want = [genome_2_motus[ID]+"/"+ID]
     where_to_save = "/".join(path_tar_file.split("/")[0:-1])
     tar.extractall(where_to_save,members=[x for x in tar.getmembers() if x.name in files_i_want])
 
