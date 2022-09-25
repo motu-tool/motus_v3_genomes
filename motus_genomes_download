@@ -132,7 +132,7 @@ def main(argv=None):
         return 0
 
     # download all genomes from a mOTU
-    if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU"):
+    if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU") or args.ID == "no_mOTU":
         sys.stderr.write("Download mOTU\n")
         download_motu(args.ID)
         return 0
