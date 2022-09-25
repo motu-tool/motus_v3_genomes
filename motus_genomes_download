@@ -52,21 +52,21 @@ def print_all_motus():
 # ------------------------------------------------------------------------------
 # download all genomes
 # ------------------------------------------------------------------------------
-def download_all_genomes(tempdir_path):
+def download_all_genomes(tempdir_path, all_url_info):
     print("TO be implemented 2")
 
 
 # ------------------------------------------------------------------------------
 # download one mOTU
 # ------------------------------------------------------------------------------
-def download_motu(ID, tempdir_path):
+def download_motu(ID, tempdir_path, all_url_info, unzip = True):
     print("TO be implemented 3")
 
 
 # ------------------------------------------------------------------------------
 # download one genome
 # ------------------------------------------------------------------------------
-def download_genome(ID, genome_2_motus, tempdir_path):
+def download_genome(ID, genome_2_motus, tempdir_path, all_url_info):
     print("TO be implemented 4")
 
 
@@ -89,6 +89,21 @@ def load_map_genome_motus():
 
     return res
 
+
+# ------------------------------------------------------------------------------
+# download the info about the mOTUs on the ETH archive
+# ------------------------------------------------------------------------------
+def download_url_links():
+    file_URLs="https://sunagawalab.ethz.ch/share/TEMP_MOTUS_DB/data_download_genomes/motu_md5_libdrive.tsv"
+
+    res = dict()
+
+    data = urlopen(file_URLs)
+    for line in data:
+        vals = line.decode('utf8').rstrip().split("\t")
+        res[vals[0]] = [vals[1],vals[2]]
+
+    return res
 
 # ------------------------------------------------------------------------------
 # MAIN
@@ -134,30 +149,36 @@ def main(argv=None):
     tempdir_path = tempfile.mkdtemp()
 
 
+    # download the info about the URLs from the ETH archive --------------------
+    all_url_info = download_url_links()
+    # dict like: 'ext_mOTU_v3_31652': ['f0cbf61dabb043108da42eb948bee657', 'https://libdrive.ethz.ch/index.php/s/AovZ7KpStxfGdhs/download?path=%2FmOTU_31508-31657&files=ext_mOTU_v3_31652.tar']
+
+
 
     # --------------------------------------------------------------------------
     # download all genomes
     if args.output_dir == "all":
         sys.stderr.write("Download all genomes\n")
-        download_all_genomes(tempdir_path)
+        download_all_genomes(tempdir_path, all_url_info)
         shutil.move(tempdir_path, args.output_dir)
         return 0
 
     # download all genomes from a mOTU
     if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU") or args.ID == "no_mOTU":
         sys.stderr.write("Download mOTU\n")
-        download_motu(args.ID,tempdir_path)
+        download_motu(args.ID,tempdir_path,all_url_info)
         shutil.move(tempdir_path, args.output_dir)
         return 0
 
     # download one genome
     sys.stderr.write("Download genome\n")
-    genome_2_motus = load_map_genome_motus()
+    genome_2_motus = load_map_genome_motus()   # it's a dict genome --> mOTU
     # check if the genome is a correct ID
     if not args.ID in genome_2_motus:
         sys.stderr.write("Error: genome not found\n")
+        shutil.rmtree(tempdir_path)
         return 1
-    download_genome(args.ID, genome_2_motus,tempdir_path)
+    download_genome(args.ID, genome_2_motus,tempdir_path,all_url_info)
     shutil.move(tempdir_path, args.output_dir)
     return 0
 
