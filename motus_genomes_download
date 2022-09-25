@@ -33,11 +33,11 @@ Options:
   -h          print this help
 
 Examples:
-If you want to download the genome 100053.SAMN02947772, you need to run:
-motus_genomes_download -m 100053.SAMN02947772 -p <path/to/dir>
+If you want to download the genome 1340435.SAMN02440767, you need to run:
+motus_genomes_download -m 1340435.SAMN02440767 -p <path/to/dir>
 
-If you want to download all genomes in the motu ref_mOTU_v3_00001, you need to run:
-motus_genomes_download -m ref_mOTU_v3_00001 -p <path/to/dir>
+If you want to download all genomes in the motu ref_mOTU_v3_00006, you need to run:
+motus_genomes_download -m ref_mOTU_v3_00006 -p <path/to/dir>
 
 If you want to run all genomes, run:
 motus_genomes_download -m all -p <path/to/dir>
@@ -143,8 +143,16 @@ def download_motu(ID, tempdir_path, all_url_info, unzip = True):
 def download_genome(ID, genome_2_motus, tempdir_path, all_url_info):
     sys.stderr.write("Download genome "+ID+"\n")
     # download the motus
-    path_tar_file = download_motu(genome_2_motus(ID), tempdir_path, all_url_info, unzip = False)
-    print("TO be implemented 4")
+    path_tar_file = download_motu(genome_2_motus[ID], tempdir_path, all_url_info, unzip = False)
+
+    # extract one file
+    tar = tarfile.open(path_tar_file)
+    files_i_want = [ID]
+    where_to_save = "/".join(path_tar_file.split("/")[0:-1])
+    tar.extractall(where_to_save,members=[x for x in tar.getmembers() if x.name in files_i_want])
+
+    # remove unused file and repo
+    os.remove(path_tar_file)
 
 
 # ------------------------------------------------------------------------------
