@@ -3,10 +3,13 @@
 import sys
 import argparse
 import os
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, urlretrieve
 import gzip
 import tempfile
 import shutil
+import time
+import hashlib
+import tarfile
 
 # ------------------------------------------------------------------------------
 #       print the help informations
@@ -42,6 +45,18 @@ motus_genomes_download -m all -p <path/to/dir>
     return str_msg
 
 
+
+# ------------------------------------------------------------------------------
+# function to return the md5 of a file
+# ------------------------------------------------------------------------------
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+
 # ------------------------------------------------------------------------------
 # print all motus and their information
 # ------------------------------------------------------------------------------
@@ -53,6 +68,7 @@ def print_all_motus():
 # download all genomes
 # ------------------------------------------------------------------------------
 def download_all_genomes(tempdir_path, all_url_info):
+    sys.stderr.write("Download all genomes\n")
     for motu in all_url_info:
         # we create a temp dir for each motu
         tempdir_path_this = tempfile.mkdtemp()
@@ -61,17 +77,73 @@ def download_all_genomes(tempdir_path, all_url_info):
         download_motu(motu,tempdir_path_this,all_url_info)
 
 
+
+
 # ------------------------------------------------------------------------------
 # download one mOTU
 # ------------------------------------------------------------------------------
+def reporthook(count, block_size, total_size):
+    global start_time
+    if count == 0:
+        start_time = time.time()
+        return
+    duration = time.time() - start_time
+    progress_size = int(count * block_size)
+    speed = int(progress_size / (1024 * duration))
+    percent = int(count * block_size * 100 / total_size)
+    sys.stdout.write("\r %d%%, %d MB, %d KB/s, %d seconds passed" %
+                    (percent, progress_size / (1024 * 1024), speed, duration))
+    sys.stdout.flush()
+
 def download_motu(ID, tempdir_path, all_url_info, unzip = True):
-    print("TO be implemented 3")
+    sys.stderr.write("Download mOTU "+ID+"\n")
+    path_result = tempdir_path+"/"+ID+".tar"
+    # download the data
+    urlretrieve(all_url_info[ID][1], path_result, reporthook)
+
+    # check md5 ----------------------------------------------------------------
+    sys.stderr.write(" Check md5: ")
+    current_md5 = md5(path_result)
+    if current_md5 == all_url_info[ID][0]:
+        sys.stderr.write("MD5 verified\n")
+    else:
+        sys.stderr.write("MD5 verification failed!\n")
+        sys.exit(1)
+
+    # for genomes we return the path
+    if unzip == False:
+        return path_result
+
+    # untar the file
+    my_tar = tarfile.open(path_result)
+    where_to_save = "/".join(path_result.split("/")[0:-1])
+    my_tar.extractall(where_to_save)
+    my_tar.close()
+
+    # move all files
+    source_dir = where_to_save + "/" + ID
+    file_names = os.listdir(source_dir)
+    for file_name in file_names:
+        shutil.move(os.path.join(source_dir, file_name), where_to_save)
+
+    # remove unused file and repo
+    shutil.rmtree(source_dir)
+    os.remove(path_result)
+
+
+
+
+
+
 
 
 # ------------------------------------------------------------------------------
 # download one genome
 # ------------------------------------------------------------------------------
 def download_genome(ID, genome_2_motus, tempdir_path, all_url_info):
+    sys.stderr.write("Download genome "+ID+"\n")
+    # download the motus
+    path_tar_file = download_motu(genome_2_motus(ID), tempdir_path, all_url_info, unzip = False)
     print("TO be implemented 4")
 
 
@@ -163,20 +235,21 @@ def main(argv=None):
     # --------------------------------------------------------------------------
     # download all genomes
     if args.ID == "all":
-        sys.stderr.write("Download all genomes\n")
         download_all_genomes(tempdir_path, all_url_info)
         shutil.move(tempdir_path, args.output_dir)
         return 0
 
     # download all genomes from a mOTU
     if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU") or args.ID == "no_mOTU":
-        sys.stderr.write("Download mOTU\n")
+        if not args.ID in all_url_info:
+            sys.stderr.write("Error: mOTUs not found\n")
+            shutil.rmtree(tempdir_path)
+            return 1
         download_motu(args.ID,tempdir_path,all_url_info)
         shutil.move(tempdir_path, args.output_dir)
         return 0
 
     # download one genome
-    sys.stderr.write("Download genome\n")
     genome_2_motus = load_map_genome_motus()   # it's a dict genome --> mOTU
     # check if the genome is a correct ID
     if not args.ID in genome_2_motus:
