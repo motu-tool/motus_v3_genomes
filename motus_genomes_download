@@ -127,18 +127,18 @@ def main(argv=None):
 
     # download all genomes
     if args.output_dir == "all":
-        sys.stderr.write("Download all genomes")
+        sys.stderr.write("Download all genomes\n")
         download_all_genomes()
         return 0
 
     # download all genomes from a mOTU
     if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU"):
-        sys.stderr.write("Download mOTU")
+        sys.stderr.write("Download mOTU\n")
         download_motu(args.ID)
         return 0
 
     # download one genome
-    sys.stderr.write("Download genome")
+    sys.stderr.write("Download genome\n")
     genome_2_motus = load_map_genome_motus()
     download_genome(args.ID, genome_2_motus)
     return 0
