@@ -53,7 +53,12 @@ def print_all_motus():
 # download all genomes
 # ------------------------------------------------------------------------------
 def download_all_genomes(tempdir_path, all_url_info):
-    print("TO be implemented 2")
+    for motu in all_url_info:
+        # we create a temp dir for each motu
+        tempdir_path_this = tempfile.mkdtemp()
+        shutil.move(tempdir_path_this, tempdir_path+"/"+motu)
+        # and call to download mOTUs
+        download_motu(motu,tempdir_path_this,all_url_info)
 
 
 # ------------------------------------------------------------------------------
@@ -157,7 +162,7 @@ def main(argv=None):
 
     # --------------------------------------------------------------------------
     # download all genomes
-    if args.output_dir == "all":
+    if args.ID == "all":
         sys.stderr.write("Download all genomes\n")
         download_all_genomes(tempdir_path, all_url_info)
         shutil.move(tempdir_path, args.output_dir)
