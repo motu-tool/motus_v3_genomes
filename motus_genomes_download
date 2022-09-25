@@ -140,6 +140,10 @@ def main(argv=None):
     # download one genome
     sys.stderr.write("Download genome\n")
     genome_2_motus = load_map_genome_motus()
+    # check if the genome is a correct ID
+    if not args.ID in genome_2_motus:
+        sys.stderr.write("Error: genome not found\n")
+        return 1
     download_genome(args.ID, genome_2_motus)
     return 0
 
