@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+import os
+
+# ------------------------------------------------------------------------------
+#       print the help informations
+# ------------------------------------------------------------------------------
+class CapitalisedHelpFormatter(argparse.HelpFormatter):
+    def add_usage(self, usage, actions, groups, prefix=None):
+        if prefix is None:
+            prefix = ''
+        return super(CapitalisedHelpFormatter, self).add_usage(usage, actions, groups, prefix)
+
+
+def msg(name=None):
+    str_msg = '''
+\00
+Program: motus_genomes_download - Download genomes used in mOTUs 3
+Usage: motus_genomes_download -m <ID> -p <path/to/dir>
+Options:
+  -m  STR     ID of the genome or mOTU to download, use "all" to download all genomes
+  -p  DIR     directory where to save the genomes, the directory will be created
+  -l          list all motus and the number of associated genomes
+  -h          print this help
+
+Examples:
+If you want to download the genome 100053.SAMN02947772, you need to run:
+motus_genomes_download -m 100053.SAMN02947772 -p <path/to/dir>
+
+If you want to download all genomes in the motu ref_mOTU_v3_00001, you need to run:
+motus_genomes_download -m ref_mOTU_v3_00001 -p <path/to/dir>
+
+If you want to run all genomes, run:
+motus_genomes_download -m all -p <path/to/dir>
+        '''
+    return str_msg
+
+
+# ------------------------------------------------------------------------------
+# print all motus and their information
+# ------------------------------------------------------------------------------
+def print_all_motus():
+    print("TO be implemented")
+
+
+# ------------------------------------------------------------------------------
+# download all genomes
+# ------------------------------------------------------------------------------
+def download_all_genomes():
+    print("TO be implemented 2")
+
+
+# ------------------------------------------------------------------------------
+# download one mOTU
+# ------------------------------------------------------------------------------
+def download_motu(ID):
+    print("TO be implemented 3")
+
+
+# ------------------------------------------------------------------------------
+# download one genome
+# ------------------------------------------------------------------------------
+def download_genome(ID):
+    print("TO be implemented 4")
+
+
+# ------------------------------------------------------------------------------
+# MAIN
+# ------------------------------------------------------------------------------
+def main(argv=None):
+
+    devnull = open(os.devnull)
+
+    parser = argparse.ArgumentParser(usage=msg(), formatter_class=CapitalisedHelpFormatter,add_help=False)
+    parser.add_argument('-m', action="store", dest='ID', default=None, help='what needs to be saved')
+    parser.add_argument('-p', action='store', default=None, dest='output_dir', help='where to save the result')
+    parser.add_argument('-l', action='store_true', default=None, dest='print_list_motus', help='print all motus')
+    parser.add_argument('-h', action='store_true', default=None, dest='print_help', help='print the help')
+    parser.add_argument('-help', action='store_true', default=None, dest='print_help2', help='print the help')
+    parser.add_argument('--help', action='store_true', default=None, dest='print_help3', help='print the help')
+    args = parser.parse_args()
+
+    if (args.print_list_motus is None) and (args.output_dir is None) and (args.ID is None):
+        print(msg())
+        return 0
+    if not(args.print_help is None) or not(args.print_help2 is None) or not(args.print_help3 is None):
+        print(msg())
+        return 0
+
+
+    # print the motus and exit -------------------------------------------------
+    if not(args.print_list_motus is None):
+        print_all_motus()
+        return 0
+
+    # identify what needs to be downloaded and run the correct function --------
+    if (args.ID is None):
+        sys.stderr.write("Error: missing -m\n")
+        return 1
+    if (args.output_dir is None):
+        sys.stderr.write("Error: missing -p\n")
+        return 1
+
+    if args.output_dir == "all":
+        sys.stderr.write("Download all genomes")
+        download_all_genomes()
+        return 0
+    if args.ID.startswith("ref_mOTU") or args.ID.startswith("meta_mOTU") or args.ID.startswith("ext_mOTU"):
+        sys.stderr.write("Download mOTU")
+        download_motu(args.ID)
+        return 0
+    sys.stderr.write("Download genome")
+    download_genome(args.ID)
+    return 0
+
+
+#-------------------------------- run main -------------------------------------
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
