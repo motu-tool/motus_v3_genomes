@@ -26,13 +26,13 @@ python motus_genomes_download -m all
 
 
 
-The script automatically checks that the downloaded file md5 is correct.
+The script automatically checks the md5 sum of the downloaded file.
 
-The data will be downloaded in the same repository where the script is located, under a repository with the name `motus_v3_genomes`.
-The structure is as follow:
-- Within `motus_v3_genomes` there is a repository per mOTU
-- Within each mOTU repository there is a file `1.list_files.txt` with the path to the files, and the files of the genomes are within the mOTU directory
-- If you do `motus_genomes_download -m all` an additional file `1.list_all_files.txt` will be created within `motus_v3_genomes`.
+The data will be downloaded in the same folder where the script is located, under a folder with the name `motus_v3_genomes`.
+The structure is as follows:
+- Within `motus_v3_genomes` there is a folder per mOTU
+- Within each mOTU folder there is a file `1.list_files.txt` with the path to the files, and the files of the genomes are within the mOTU directory
+- If you run `motus_genomes_download -m all` an additional file `1.list_all_files.txt` will be created within `motus_v3_genomes`.
 
 Note that all files are first downloaded to `motus_v3_genomes/temp_dir` and moved to the final destination once the download and unzip is complete.
 
