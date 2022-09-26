@@ -40,3 +40,8 @@ Finally, you can list all motus and the number of associated genomes with:
 ```
 python motus_genomes_download -l
 ```
+
+And you can list all genomes with:
+```
+python motus_genomes_download -g
+```
