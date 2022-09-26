@@ -80,7 +80,22 @@ def md5(fname):
 # print all motus and their information
 # ------------------------------------------------------------------------------
 def print_all_motus():
-    print("TO be implemented")
+    all_url_info = download_url_links()
+    # dict like: 'ext_mOTU_v3_31652': ['f0cbf61dabb043108da42eb948bee657', 'https://libdrive.ethz.ch/index.php/s/AovZ7KpStxfGdhs/download?path=%2FmOTU_31508-31657&files=ext_mOTU_v3_31652.tar']
+    genome_2_motus = load_map_genome_motus()
+    # it's a dict genome --> mOTU
+
+    # we find the number of genomes per mOTU
+    motus_count = dict()
+    for genome in genome_2_motus:
+        if not genome_2_motus[genome] in motus_count:
+            motus_count[genome_2_motus[genome]] = 0
+        motus_count[genome_2_motus[genome]] = motus_count[genome_2_motus[genome]] + 1
+
+    # print the result
+    print("motu\tnumber_of_genomes\turl_file\tmd5")
+    for motu in all_url_info:
+        print(motu+"\t"+str(motus_count[motu])+"\t"+all_url_info[motu][1]+"\t"+all_url_info[motu][0])
 
 
 
