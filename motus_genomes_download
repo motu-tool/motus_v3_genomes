@@ -43,6 +43,7 @@ Options:
   -m  STR     ID of the genome or mOTU to download, use "all" to download all genomes
   -f          force to re-download the data
   -l          list all motus and the number of associated genomes
+  -g          list all genomes and the associated motus
   -h          print this help
 
 Examples:
@@ -53,7 +54,7 @@ If you want to download all genomes in the motu ref_mOTU_v3_00006, you need to r
 motus_genomes_download -m ref_mOTU_v3_00006
 
 If you want to run all genomes, run:
-motus_genomes_download -m all -p
+motus_genomes_download -m all
         '''
     return str_msg
 
@@ -97,6 +98,16 @@ def print_all_motus():
     for motu in all_url_info:
         print(motu+"\t"+str(motus_count[motu])+"\t"+all_url_info[motu][1]+"\t"+all_url_info[motu][0])
 
+# ------------------------------------------------------------------------------
+# print all genomes and to which motus they map to
+# ------------------------------------------------------------------------------
+def print_all_genomes():
+    genome_2_motus = load_map_genome_motus()
+    # it's a dict genome --> mOTU
+
+    print("genome\tmotus")
+    for genome in genome_2_motus:
+        print(genome+"\t"+genome_2_motus[genome])
 
 
 
@@ -348,12 +359,13 @@ def main(argv=None):
     parser.add_argument('-m', action="store", dest='ID', default=None, help='what needs to be saved')
     parser.add_argument('-f', action='store_true', default=None, dest='force_redownload', help='redo the download')
     parser.add_argument('-l', action='store_true', default=None, dest='print_list_motus', help='print all motus')
+    parser.add_argument('-g', action='store_true', default=None, dest='print_list_genomes', help='print all genomes')
     parser.add_argument('-h', action='store_true', default=None, dest='print_help', help='print the help')
     parser.add_argument('-help', action='store_true', default=None, dest='print_help2', help='print the help')
     parser.add_argument('--help', action='store_true', default=None, dest='print_help3', help='print the help')
     args = parser.parse_args()
 
-    if (args.print_list_motus is None) and (args.force_redownload is None) and (args.ID is None):
+    if (args.print_list_motus is None) and (args.force_redownload is None) and (args.ID is None) and (args.print_list_genomes is None):
         print(msg())
         return 0
     if not(args.print_help is None) or not(args.print_help2 is None) or not(args.print_help3 is None):
@@ -369,6 +381,11 @@ def main(argv=None):
     if not(args.print_list_motus is None):
         print_all_motus()
         return 0
+    # print the genomes and exit -----------------------------------------------
+    if not(args.print_list_genomes is None):
+        print_all_genomes()
+        return 0
+
 
     # identify what needs to be downloaded and run the correct function --------
     if (args.ID is None):
