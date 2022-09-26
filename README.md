@@ -36,8 +36,25 @@ The structure is as follow:
 
 Note that all files are first downloaded to `motus_v3_genomes/temp_dir` and moved to the final destination once the download and unzip is complete.
 
+If you run the two commands listed above to download a genome and mOTU, you will end up with the following structure:
+```
+.
+|-- README.md
+|-- motus_genomes_download
+`-- motus_v3_genomes
+    |-- ext_mOTU_v3_19213
+    |   |-- 1.list_files.txt
+    |   |-- LIAN20-1_SAMN11649406_METAG_001584.fa
+    |   `-- LIAN20-1_SAMN11649416_METAG_000035.fa
+    |-- ref_mOTU_v3_00006
+    |   |-- 1.list_files.txt
+    |   |-- 1218103.SAMD00041821.fa
+    |   |-- 1340435.SAMN02440767.fa
+    |   `-- 253.SAMN05421692.fa
+    `-- temp_dir
+```
 
-Finally, you can list all motus and the number of associated genomes with:
+Finally, you can list all motus and the number of associated genomes (available for download) with:
 ```
 python motus_genomes_download -l
 ```
