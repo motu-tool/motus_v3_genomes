@@ -13,6 +13,9 @@ import tarfile
 import shlex
 import subprocess
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 # position of the script -------------------------------------------------------
 path_mOTUs = os.path.realpath(__file__)
 path_array = path_mOTUs.split("/")

@@ -6,6 +6,7 @@ This tool downloads the 700,000 genomes used for the mOTUs 3 database.
 First, clone this repository
 ```
 git clone https://github.com/motu-tool/motus_v3_genomes
+cd motus_v3_genomes
 ```
 
 To download one genome type (for example the MAG `LIAN20-1_SAMN11649416_METAG_000035`):
