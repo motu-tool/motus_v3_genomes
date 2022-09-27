@@ -1,7 +1,7 @@
 Download  mOTUs 3 genomes
 ========
 
-This tool allows to download all or any of the 700,000 genomes used for the mOTUs 3 database. The user can download a specific genome (type), all genomes associated with a specific mOTU, or the complete database.
+This tool allows to download all or any of the 700,000 genomes used for the mOTUs 3 database. The user can download a specific genome, all genomes associated with a specific mOTU, or the complete database.
 
 ## Installation 
 To run the script, clone this repository
@@ -25,7 +25,7 @@ Note that all files are first downloaded to `motus_v3_genomes/temp_dir` and move
 The script automatically checks the md5 sum of each of the downloaded files.
 
 
-To download one genome type (for example the MAG `LIAN20-1_SAMN11649416_METAG_000035`):
+To download one genome (for example the MAG `LIAN20-1_SAMN11649416_METAG_000035`):
 
 ```
 python motus_genomes_download -m LIAN20-1_SAMN11649416_METAG_000035
