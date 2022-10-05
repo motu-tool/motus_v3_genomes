@@ -397,7 +397,7 @@ def main(argv=None):
 
     # create directory with the result -----------------------------------------
     if os.path.isdir(result_repo):
-        sys.stderr.write("Warning: output directory exists alerady ("+result_repo+")\n")
+        sys.stderr.write("Warning: output directory exists already ("+result_repo+")\n")
     else:
         sys.stderr.write("Creating output directory ("+result_repo+")\n")
         os.mkdir(result_repo)
